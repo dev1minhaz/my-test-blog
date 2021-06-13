@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+{% load tailwind_filters %}
+{% block title %} {{ post.blog_title }} {% endblock title %}
+{% block content %}
+	<div class="max-w-screen-lg mx-auto">
+    <main class="mt-10">
+
+      <div class="mb-4 md:mb-0 w-full mx-auto relative">
+        <div class="px-4 lg:px-0">
+          <h2 class="text-4xl font-semibold text-gray-800 leading-tight">
+            {{ post.blog_title }}
+          </h2>
+          <a 
+            href="#"
+            class="bg-yellow-100 hover:bg-yellow-300 p-1 px-2 text-green-700 inline-flex items-center justify-center"
+          >
+            Cryptocurrency
+          </a>
+          {% if post.author == user %}
+            <a href="{% url 'app_post:edit_blog' pk=post.pk %}" class="bg-yellow-100 hover:bg-yellow-300 p-1 px-2 text-green-700 inline-flex items-center justify-center">
+              Edit
+            </a>
+          {% endif %}
+          <h2 class="tracking-widest text-xs title-font font-medium text-gray-400 my-2">
+              <i>Posted on: {{post.publish_date}} &nbsp;&nbsp;&nbsp;&nbsp; Updated on: {{post.update_date}}</i>
+          </h2>
+        </div>
+
+        <img src="/media/{{post.blog_image}}" class="w-full object-cover lg:rounded" style="height: 28em;"/>
+      </div>
+
+      <div class="flex flex-col lg:flex-row lg:space-x-12">
+
+        <div class="px-4 lg:px-0 mt-12 text-gray-700 text-lg leading-relaxed w-full lg:w-3/4">
+          <p class="pb-6">
+            {{post.blog_content|linebreaks}}
+          </p>
+        </div>
+
+        <div class="w-full lg:w-1/4 m-auto mt-12 max-w-screen-sm">
+          <div class="p-4 border-t border-b md:border md:rounded">
+            <div class="flex py-2">
+              {% if post.author.user_profile.profile_picture %}
+                <img src="/media/{{ post.author.user_profile.profile_picture }}" class="h-10 w-10 rounded-full mr-2 object-cover" />
+              {% else %}
+                <img src="https://cdn1.iconfinder.com/data/icons/technology-devices-2/100/Profile-512.png" class="h-10 w-10 rounded-full mr-2 object-cover" />
+              {% endif %}
+              <div>
+                <p class="font-semibold text-gray-700 text-sm">
+                  {% if post.author.first_name and post.author.last_name %}
+                      {{post.author.first_name }} {{ post.author.last_name }}
+                  {% else %}
+                      @{{ post.author.username }}
+                  {% endif %}
+                </p>
+                <p class="font-semibold text-gray-600 text-xs"> Editor </p>
+              </div>
+            </div>
+            <p class="text-gray-700 py-3">
+              Mike writes about technology
+              Yourself required no at thoughts delicate landlord it be. Branched dashwood do is whatever it.
+            </p>
+            <button class="px-2 py-1 text-gray-100 bg-green-700 flex w-full items-center justify-center rounded">
+              Follow 
+              <i class='bx bx-user-plus ml-2' ></i>
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </main>
+    <div class="my-2">
+      {% if not liked %}
+        <a href="{% url 'app_like:liked_post' pk=post.pk %}">
+          <i class="fa fa-thumbs-up fa-2x"></i>
+        </a>
+      {% else %}
+        <a href="{% url 'app_like:unliked_post' pk=post.pk %}">
+          <i class="fa fa-thumbs-down fa-2x"></i>
+        </a>
+      {% endif %}
+    </div>
+    <section class="rounded-b-lg  mt-4 ">
+      <form action="" accept-charset="UTF-8" method="post">
+        {{ comment_form|crispy }}
+        {% csrf_token %}
+        <button type="submit" class="font-bold py-2 px-4 w-full bg-purple-400 text-lg text-white shadow-md rounded-lg">Comment</button>
+      </form>
+      <div id="task-comments" class="pt-4">
+        {% for comment in post.blog_comment.all %}
+          <div class="bg-white rounded-lg p-3  flex flex-col justify-center items-center md:items-start shadow-lg mb-4">
+            <div class="flex flex-row justify-center mr-2">
+              {% if comment.user.user_profile.profile_picture %}
+                <img alt="avatar" width="48" height="48" class="rounded-full w-10 h-10 mr-4 shadow-lg mb-4" src="/media/{{comment.user.user_profile.profile_picture}}">
+              {% else %} 
+                <img alt="avatar" width="48" height="48" class="rounded-full w-10 h-10 mr-4 shadow-lg mb-4" src="https://cdn1.iconfinder.com/data/icons/technology-devices-2/100/Profile-512.png">               
+              {% endif %}
+              <h3 class="text-purple-600 font-semibold text-lg text-center md:text-left ">
+                {% if comment.user.first_name and comment.user.last_name %}
+                  {{comment.user.first_name }} {{ comment.user.last_name }}
+                {% else %}
+                  @{{ comment.user.username }}
+                {% endif %}
+              </h3>
+            </div>
+            <p style="width: 90%" class="text-gray-600 text-lg text-center md:text-left ">
+              {{comment.comment}}
+            </p>
+          </div>
+        {% endfor %}
+      </div>
+    </section>
+  </div>
+{% endblock content %}
